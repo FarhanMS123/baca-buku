@@ -5,5 +5,22 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/typography"), require("daisyui")],
+  daisyui: {
+    themes: [
+      {
+        book: {
+          "primary": "#2f5b7f",
+          "secondary": "#cfb8ea",
+          "accent": "#6531a5",
+          "neutral": "#0369a1",
+          "base-100": "#e2f1fd",
+          "info": "#0586f3",
+          "success": "#80ced1",
+          "warning": "#efd8bd",
+          "error": "#e58b8b",
+        },
+      }
+    ],
+  },
 } satisfies Config;

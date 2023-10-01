@@ -20,6 +20,17 @@ export default {
           "warning": "#efd8bd",
           "error": "#e58b8b",
         },
+        bookDark: {
+          "primary": "#fbcc55",
+          "secondary": "#1e063c",
+          "accent": "#91e826",
+          "neutral": "#F9F6FE",
+          "base-100": "#3B3B98",
+          "info": "#0586f3",
+          "success": "#80ced1",
+          "warning": "#efd8bd",
+          "error": "#e58b8b",
+        },
       }
     ],
   },

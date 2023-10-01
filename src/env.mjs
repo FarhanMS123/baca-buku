@@ -14,6 +14,15 @@ export const env = createEnv({
         (str) => !str.includes("YOUR_MYSQL_URL_HERE"),
         "You forgot to change the default URL"
       ),
+    DATABASE_PRISMA_URL: z.string().min(1),
+    DATABASE_URL_NON_POOLING: z.string().min(1),
+    DATABASE_DATABASE: z.string().min(1),
+    DATABASE_USER: z.string().optional(),
+    DATABASE_HOST: z.string().optional(),
+    DATABASE_PASSWORD: z.string().optional(),
+
+    BLOB_READ_WRITE_TOKEN: z.string().min(1),
+
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -29,8 +38,8 @@ export const env = createEnv({
       process.env.VERCEL ? z.string().min(1) : z.string().url()
     ),
     // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
-    DISCORD_CLIENT_ID: z.string(),
-    DISCORD_CLIENT_SECRET: z.string(),
+    DISCORD_CLIENT_ID: z.string().optional(),
+    DISCORD_CLIENT_SECRET: z.string().optional(),
   },
 
   /**
@@ -48,6 +57,15 @@ export const env = createEnv({
    */
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
+    DATABASE_PRISMA_URL: process.env.DATABASE_PRISMA_URL,
+    DATABASE_URL_NON_POOLING: process.env.DATABASE_URL_NON_POOLING,
+    DATABASE_DATABASE: process.env.DATABASE_DATABASE,
+    DATABASE_USER: process.env.DATABASE_USER,
+    DATABASE_HOST: process.env.DATABASE_HOST,
+    DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
+
+    BLOB_READ_WRITE_TOKEN:  process.env.BLOB_READ_WRITE_TOKEN,
+
     NODE_ENV: process.env.NODE_ENV,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,

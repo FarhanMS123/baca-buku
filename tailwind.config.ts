@@ -9,7 +9,7 @@ export default {
   daisyui: {
     themes: [
       {
-        book: {
+        bookLight: {
           "primary": "#2f5b7f",
           "secondary": "#cfb8ea",
           "accent": "#6531a5",

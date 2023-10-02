@@ -15,6 +15,10 @@ datasource db {
   directUrl = env("DATABASE_URL_NON_POOLING")
 }
 
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -48,6 +52,8 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  password      String?
+  isAdmin       Boolean   @default(false)
   accounts      Account[]
   sessions      Session[]
 }
@@ -58,4 +64,22 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// Application Content
+model Book {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String
+  ebook       String
+  audio       Int
+  /// [AudioSegment]
+  segment     Json[] @db.JsonB
+  backsong    Int
+}
+
+model Audio {
+  id        Int    @id @default(autoincrement())
+  name      String
+  blob_path String
 }

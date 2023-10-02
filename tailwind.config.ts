@@ -3,7 +3,11 @@ import { type Config } from "tailwindcss";
 export default {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: {
+        foodPattern: 'url("/i-like-food.svg")',
+      },
+    },
   },
   plugins: [require("@tailwindcss/typography"), require("daisyui")],
   daisyui: {
@@ -31,7 +35,18 @@ export default {
           "warning": "#efd8bd",
           "error": "#e58b8b",
         },
-      }
+        bookDarkAlt: {
+          "primary": "#fbcc55",
+          "secondary": "#1e063c",
+          "accent": "#91e826",
+          "neutral": "#3B3B98",
+          "base-100": "#F9F6FE",
+          "info": "#0586f3",
+          "success": "#80ced1",
+          "warning": "#efd8bd",
+          "error": "#e58b8b",
+        },
+      },
     ],
   },
 } satisfies Config;

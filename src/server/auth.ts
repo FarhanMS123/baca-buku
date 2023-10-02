@@ -5,6 +5,8 @@ import {
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 import DiscordProvider from "next-auth/providers/discord";
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -41,6 +43,10 @@ const adapter = PrismaAdapter(db);
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
+    // jwt: ({ account, token, user }) => ({
+    //     ...token,
+    //     sub: user.id,
+    // }),
     session: ({ session, user }) => ({
       ...session,
       user: {
@@ -49,19 +55,50 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   },
+  jwt: {
+    encode: async ({ secret, token, maxAge }) => {
+      const newToken = jwt.sign(token as object, secret, { 
+        algorithm: "HS256",
+        expiresIn: maxAge,
+      });
+
+      let session;
+      if (token != null && typeof token.sub == "string" && adapter.createSession != undefined) {
+        session = await adapter.createSession({
+          userId: token.sub,
+          sessionToken: newToken,
+          expires: new Date(new Date().getTime() + ((maxAge ?? 0) * 1000)),
+        });
+      }
+
+      return newToken;
+    }
+  },
   adapter,
   providers: [
     CredentialsProvider({
-        credentials: {
-            email: { label: "Email", type: "email" },
-            password: { label: "Password", type: "password" },
-        },
-        authorize: async function (cred, req) {
-            const user = await db.user.findFirst({ where: {
-                email: cred!.email,
-            } });
-            return null;
-        }
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      authorize: async function (cred, req) {
+        const user = await db.user.findFirst({ where: {
+          email: cred!.email,
+        } });
+
+        if (!user) return null;
+
+        const compare = await bcrypt.compare(cred!.password, user.password as string);
+
+        if (!compare) return null;
+
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+        };
+      }
     }),
     /**
      * ...add more providers here.
@@ -75,6 +112,8 @@ export const authOptions: NextAuthOptions = {
   ],
   theme: {
     logo: "/logo.jpeg",
+    brandColor: "#3B3B98",
+    colorScheme: "light",
   },
 };
 

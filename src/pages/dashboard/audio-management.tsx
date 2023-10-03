@@ -1,6 +1,6 @@
 export default function AudioManagement () {
   return <>
-  <div className="flex gap-4">
+  <div className="flex gap-4 items-start">
     <AudioList />
     <AudioViewer />
   </div>
@@ -11,7 +11,7 @@ AudioManagement.theme = "dashboard"
 
 function AudioList () {
   return(
-    <div className="overflow-x-auto max-h-96 table-pin-rows table-pin-cols">
+    <div className="overflow-x-auto max-h-[30rem] table-pin-rows table-pin-cols">
       <table className="table">
         <thead>
           <tr>
@@ -37,6 +37,13 @@ function AudioList () {
           }
         </tbody>
 
+        <tfoot>
+          <tr>
+            <td colSpan={3}>
+              <button className="btn btn-primary ml-auto">Add Audio</button>
+            </td>
+          </tr>
+        </tfoot>
       </table>
     </div>
   );
@@ -57,9 +64,9 @@ function AudioViewer () {
             <span className="label-text">Categorize your Audio</span>
           </label>
           <select className="select select-bordered w-full">
-            <option selected>Main Theme</option>
-            <option>Backsong</option>
-            <option>Audio</option>
+            <option value="main_theme" selected>Main Theme</option>
+            <option value="backsong">Backsong</option>
+            <option value="audio">Audio</option>
           </select>
         </div>
         <div className="form-control w-full">
@@ -67,8 +74,16 @@ function AudioViewer () {
             <span className="label-text">Upload the Audio</span>
           </label>
           <input type="file" className="file-input file-input-bordered file-input-primary w-full" />
+          {true && <label className="label">
+            <span className="label-text-alt">You could empty this field.</span>
+          </label>}
         </div>
-        <div className="card-actions justify-end">
+        {true && <div className="mt-2">
+          <audio controls>
+            <source src="#" />
+          </audio>
+        </div>}
+        <div className="card-actions justify-end mt-4">
           <button className="btn btn-outline btn-error">Delete</button>
           <button className="btn btn-primary">Update</button>
           <button className="btn btn-primary">Add</button>

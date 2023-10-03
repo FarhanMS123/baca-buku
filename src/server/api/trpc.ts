@@ -133,7 +133,7 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 });
 
 const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
-    if (!ctx.session!.user!.isAdmin) {
+    if (!ctx.session!.user.isAdmin) {
       throw new TRPCError({ code: "FORBIDDEN" });
     }
     return next({

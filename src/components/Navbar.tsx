@@ -23,8 +23,6 @@ export default function NavBar() {
 function MenuMd() {
   const { data: session } = useSession();
 
-  console.log({session});
-
   return <div className="navbar-end gap-2 hidden md:flex">
   {!session && <>
     <button className="btn btn-primary" onClick={() => void signIn()}>Login</button>
@@ -32,7 +30,7 @@ function MenuMd() {
   </>}
   {session && <>
     <Link href="/dashboard" className="btn btn-ghost">Dashboard</Link>
-    <button className="btn btn-ghost" onClick={() => signOut()}>Signout</button>
+    <button className="btn btn-ghost" onClick={() => void signOut()}>Signout</button>
   </>}
 </div>
 }
@@ -53,7 +51,7 @@ function MenuMobile() {
         {session && <>
           <li><Link href="/dashboard">Dashboard</Link></li>
           <div className="divider divider-vertical m-0"></div>
-          <li><a href="#" onClick={() => signOut()}>Signout</a></li>
+          <li><a href="#" onClick={() => void signOut()}>Signout</a></li>
         </>}
       </ul>
     </details>

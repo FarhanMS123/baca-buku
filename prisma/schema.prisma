@@ -81,7 +81,7 @@ model Book {
 model Audio {
   id        Int    @id @default(autoincrement())
   name      String
-  audioType AudioType
+  audio_type AudioType
   blob_path String
 }
 

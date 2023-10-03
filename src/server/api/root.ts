@@ -1,6 +1,7 @@
 import { exampleRouter } from "~/server/api/routers/example";
 import { createTRPCRouter } from "~/server/api/trpc";
 import { authRouter } from "./routers/auth";
+import { audioRouter } from "./routers/audio";
 import { bukuRouter } from "./routers/buku";
 
 /**
@@ -11,7 +12,8 @@ import { bukuRouter } from "./routers/buku";
 export const appRouter = createTRPCRouter({
   example: exampleRouter,
   auth: authRouter,
-  buku: bukuRouter
+  audio: audioRouter,
+  buku: bukuRouter,
 });
 
 // export type definition of API

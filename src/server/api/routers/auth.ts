@@ -23,7 +23,6 @@ export const authRouter = createTRPCRouter({
                 password: hash,
             },
         });
-        console.log({ salt, hash, user });
         return true;
     }),
 });

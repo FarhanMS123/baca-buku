@@ -5,10 +5,12 @@ import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
+  adminProcedure,
+  guestProcedure
 } from "~/server/api/trpc";
 
 export const authRouter = createTRPCRouter({
-    register: publicProcedure.input(z.object({
+    register: guestProcedure.input(z.object({
         name: z.string(),
         email: z.string().email(),
         password: z.string(),

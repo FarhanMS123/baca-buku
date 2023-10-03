@@ -31,12 +31,8 @@ function MenuMd() {
     <Link href="/register" className="btn">Register</Link>
   </>}
   {session && <>
-    <Link href="#" className="btn btn-ghost">Dashboard</Link>
+    <Link href="/dashboard" className="btn btn-ghost">Dashboard</Link>
     <button className="btn btn-ghost" onClick={() => signOut()}>Signout</button>
-  </>}
-  {session && session.user.isAdmin && <>
-    <div className="divider divider-vertical border-2 h-8"></div>
-    <Link href="#" className="btn btn-ghost">Admin</Link>
   </>}
 </div>
 }
@@ -55,13 +51,9 @@ function MenuMobile() {
           <li><a href="http://" target="_blank">Register</a></li>
         </>}
         {session && <>
-          <li><a href="http://" target="_blank">Dashboard</a></li>
+          <li><Link href="/dashboard">Dashboard</Link></li>
           <div className="divider divider-vertical m-0"></div>
           <li><a href="#" onClick={() => signOut()}>Signout</a></li>
-        </>}
-        {session && session.user.isAdmin && <>
-          <div className="divider divider-vertical m-0"></div>
-          <li><a href="http://" target="_blank">Admin</a></li>
         </>}
       </ul>
     </details>

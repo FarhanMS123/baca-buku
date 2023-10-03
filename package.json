@@ -19,6 +19,7 @@
     "@trpc/next": "^10.37.1",
     "@trpc/react-query": "^10.37.1",
     "@trpc/server": "^10.37.1",
+    "@vercel/blob": "^0.13.0",
     "bcrypt": "^5.1.1",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.279.0",

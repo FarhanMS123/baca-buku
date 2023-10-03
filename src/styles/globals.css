@@ -5,3 +5,7 @@
 .el {
   color: #aabbcc;
 }
+
+.glass {
+  @apply bg-none bg-base-100 bg-opacity-50 backdrop-blur-sm text-base-content;
+}

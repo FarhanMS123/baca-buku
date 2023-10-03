@@ -72,14 +72,21 @@ model Book {
   name        String
   description String
   ebook       String
-  audio       Int
+  audio       Int?
   /// [AudioSegment]
   segment     Json[] @db.JsonB
-  backsong    Int
+  backsong    Int?
 }
 
 model Audio {
   id        Int    @id @default(autoincrement())
   name      String
+  audioType AudioType
   blob_path String
+}
+
+enum AudioType {
+    audio
+    backsong
+    main_theme
 }

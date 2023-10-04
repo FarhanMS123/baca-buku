@@ -1,15 +1,29 @@
+import { type Dispatch, type SetStateAction, useState } from "react";
+
+type AudioBank = {
+  name: string;
+  audio_type: "main_theme" | "backsong" | "audio";
+  audio?: string;
+};
+
+type StateViewer = "add" | "update" | null;
+
 export default function AudioManagement () {
+  const [stateViewer, setStateViewer] = useState<StateViewer>(null);
   return <>
   <div className="flex gap-4 items-start">
-    <AudioList />
-    <AudioViewer />
+    <AudioList {...{stateViewer, setStateViewer}} />
+    {stateViewer != null && <AudioViewer {...{stateViewer, setStateViewer}} />}
   </div>
   </>;
 }
 
 AudioManagement.theme = "dashboard"
 
-function AudioList () {
+function AudioList ({ stateViewer, setStateViewer }: {
+  stateViewer: StateViewer;
+  setStateViewer: Dispatch<SetStateAction<StateViewer>>
+}) {
   return(
     <div className="overflow-x-auto max-h-[30rem] table-pin-rows table-pin-cols">
       <table className="table">
@@ -24,7 +38,7 @@ function AudioList () {
         <tbody>
           {
             Array(100).fill(0).map((x, i) => 
-              <tr key={i} className="hover">
+              <tr key={i} className="hover" onClick={() => setStateViewer("update")}>
                 <td>Some Unique Name</td>
                 <td>Main Theme</td>
                 <td>
@@ -40,7 +54,7 @@ function AudioList () {
         <tfoot>
           <tr>
             <td colSpan={3}>
-              <button className="btn btn-primary ml-auto">Add Audio</button>
+              <button className="btn btn-primary ml-auto" onClick={() => setStateViewer("add")}>Add Audio</button>
             </td>
           </tr>
         </tfoot>
@@ -49,7 +63,10 @@ function AudioList () {
   );
 }
 
-function AudioViewer () {
+function AudioViewer ({ stateViewer, setStateViewer }: {
+  stateViewer: StateViewer;
+  setStateViewer: Dispatch<SetStateAction<StateViewer>>
+}) {
   return (
     <div className="card w-96 border border-spacing-1">
       <div className="card-body">
@@ -84,9 +101,11 @@ function AudioViewer () {
           </audio>
         </div>}
         <div className="card-actions justify-end mt-4">
-          <button className="btn btn-outline btn-error">Delete</button>
-          <button className="btn btn-primary">Update</button>
-          <button className="btn btn-primary">Add</button>
+          {stateViewer == "update" && <>
+            <button className="btn btn-outline btn-error">Delete</button>
+            <button className="btn btn-primary">Update</button>
+          </>}
+          {stateViewer == "add" && <button className="btn btn-primary">Add</button>}
         </div>
       </div>
     </div>

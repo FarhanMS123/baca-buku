@@ -3,31 +3,28 @@ import formidable from "formidable";
 import crypto from "crypto";
 import { renameSync } from "node:fs";
 import { dirname, join } from "path";
+import IncomingForm from "formidable/Formidable";
 
 export default async function handler (req: NextApiRequest, res: NextApiResponse) {
-    const names: string[] = [];
+    const names: Record<string, string[]> = {};
 
-    const form = formidable({
-        // filename: (name, ext, part, form) => {
-        //     const newName = `${new Date().getTime()}-${crypto.randomInt(1000, 9999)}.${name}.${ext}`;
-        //     console.log({ name, ext, newName });
-        //     return newName;
-        // }
-    });
+    const form = formidable({} as formidable.Options) as IncomingForm;
 
     const [fields, files] = await form.parse(req);
 
-    Object.keys(files).map((field_name) => {
-        const field = files[field_name];
-        field?.map((file) => {
-            const dir = dirname(file.filepath);
-            const original = file.originalFilename;
-            const newName = `${new Date().getTime()}-${crypto.randomInt(1000, 9999)}_${original}`;
-            const newPath = join(dir, newName);
-            renameSync(file.filepath, newPath);
-            names.push(newName);
-        });
-    });
+    for(const [field, ffiles] of Object.entries(files)) {
+        if (ffiles != undefined) 
+            for (const file of ffiles) {
+                const dir = dirname(file.filepath);
+                const original = file.originalFilename;
+                const newName = `${new Date().getTime()}-${crypto.randomInt(1000, 9999)}_${original}`;
+                const newPath = join(dir, newName);
+                renameSync(file.filepath, newPath);
+
+                if (typeof names[field] != "object" || names[field]!.constructor.name != Array.name) names[field] = [];
+                names[field]!.push(newName);
+            }
+    }
 
     res.json({names});
 }

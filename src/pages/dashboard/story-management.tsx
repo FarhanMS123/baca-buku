@@ -76,6 +76,7 @@ function StoryViewer ({ stateViewer, setStateViewer }: {
   stateViewer: StateViewer;
   setStateViewer: Dispatch<SetStateAction<StateViewer>>
 }) {
+
   return (
     <div className="card w-96 border border-spacing-1">
       <div className="card-body">

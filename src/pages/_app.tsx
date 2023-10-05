@@ -27,7 +27,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <link rel="icon" href="/favico.ico" />
       </Head>
       <NavBar />
-      {theme == "" && <Component {...pageProps} /> }
+      {(!theme || theme == "") && <Component {...pageProps} /> }
       {theme == "dashboard" && <Dashboard>
         <Component {...pageProps} />
       </Dashboard> }

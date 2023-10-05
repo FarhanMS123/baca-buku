@@ -1,4 +1,8 @@
 import { z } from "zod";
+import { put, del } from "@vercel/blob";
+import { readFile } from "fs/promises";
+import os from "os";
+import path from "path";
 
 import {
   createTRPCRouter,
@@ -8,20 +12,74 @@ import {
 } from "~/server/api/trpc";
 
 export const audioRouter = createTRPCRouter({
-    getAudios: publicProcedure.query(() => "hello"),
+    getAudios: publicProcedure.query(({ ctx: { db } }) => db.audio.findMany()),
     getAudio: publicProcedure.input(z.number()).query(() => "hello"),
     uploadAudio: adminProcedure
         .input(z.object({
             name: z.string(),
             audio_type: z.enum(["audio", "backsong", "main_theme"]),
             audio: z.string(),
-        })).mutation(() => "hello"),
+        })).mutation(async ({ ctx: { db }, input }) => {
+            const audioname = encodeURIComponent(input.audio);
+            const blob = await readFile(path.join(os.tmpdir(), audioname));
+            const vname = `audios/${audioname}`;
+
+            const file = await put(vname, blob, {
+                access: "public",
+            });
+
+            const audio = await db.audio.create({
+                data: {
+                    name: input.name,
+                    audio_type: input.audio_type,
+                    blob_path: file.pathname,
+                    blob_url: file.url,
+                },
+            });
+
+            return audio;
+        }),
     updateAudio: adminProcedure
         .input(z.object({
+            id: z.number(),
             name: z.string().optional(),
             audio_type: z.enum(["audio", "backsong", "main_theme"]).optional(),
             audio: z.string().optional(),
-        })).mutation(() => "hello"),
+        })).mutation(async ({ ctx: { db }, input }) => {
+            let audioname, blob, vname, file, audio;
+
+            audio = await db.audio.findFirst({
+                where: {
+                    id: input.id,
+                }
+            });
+
+            if (input.audio){
+                audioname = encodeURIComponent(input.audio);
+                blob = await readFile(path.join(os.tmpdir(), audioname));
+                vname = `audios/${audioname}`;
+                file = await put(vname, blob, {
+                    access: "public",
+                });
+                await del(audio!.blob_url);
+            }
+
+            audio = await db.audio.update({
+                where: {
+                    id: input.id,
+                },
+                data: {
+                    ...(input.name ? {name: input.name} : {}),
+                    ...(input.audio_type ? {audio_type: input.audio_type} : {}),
+                    ...(input.audio ? {
+                        blob_path: file!.pathname,
+                        blob_url: file!.url
+                    } : {}),
+                },
+            });
+
+            return audio;
+        }),
     deleteAudio: adminProcedure
-        .input(z.number()).mutation(() => "hello"),
+        .input(z.number()).mutation(({ ctx: { db }, input }) => db.audio.delete({ where: { id: input } })),
 });

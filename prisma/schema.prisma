@@ -79,14 +79,15 @@ model Book {
 }
 
 model Audio {
-  id        Int    @id @default(autoincrement())
-  name      String
+  id         Int       @id @default(autoincrement())
+  name       String
   audio_type AudioType
-  blob_path String
+  blob_path  String
+  blob_url   String
 }
 
 enum AudioType {
-    audio
-    backsong
-    main_theme
+  audio
+  backsong
+  main_theme
 }

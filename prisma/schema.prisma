@@ -71,11 +71,12 @@ model Book {
   id          Int    @id @default(autoincrement())
   name        String
   description String
-  ebook       String
-  audio       Int?
+  blob_path       String
+  blob_url       String
+  audio_id       Int?
   /// [AudioSegment]
   segment     Json[] @db.JsonB
-  backsong    Int?
+  backsong_id    Int?
 }
 
 model Audio {

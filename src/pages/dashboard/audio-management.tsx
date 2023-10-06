@@ -4,6 +4,7 @@ import axios from "axios";
 import { api } from "~/utils/api";
 import { XCircle } from "lucide-react";
 import { Label } from "~/components/forms";
+import { type Audio } from "@prisma/client";
 
 export type AudioBank = {
   id?: number,
@@ -12,7 +13,7 @@ export type AudioBank = {
   audio: string;
 };
 
-type StateViewer = "add" | AudioBank | null; // | (ReturnType<typeof api.audio.getAudios.useQuery>)["data"];
+type StateViewer = "add" | AudioBank | Audio | null;
 
 export default function AudioManagement () {
   const { refetch } = api.audio.getAudios.useQuery();
@@ -113,19 +114,17 @@ function AudioViewer ({ stateViewer, refresh }: {
   }, [ urlObj ]);
 
   useEffect(()=>{
-      if (!isTriggered) return;
+    if ("audio" in formData && typeof names == "object" && typeof names.names == "object" 
+        && typeof names.names.audio == "object" && names.names.audio != null) 
+      formData.audio = names.names.audio[0];
 
-      if ("audio" in formData && typeof names == "object" && typeof names.names == "object" 
-          && typeof names.names.audio == "object" && names.names.audio != null) 
-        formData.audio = names.names.audio[0];
-
-      if(uploaded || isTriggered) {
-        if (isNew) create(formData as AudioBank);
-        else save({
-          ...(formData as AudioBank),
-          id: 0,
-        });
-      }
+    if(uploaded || isTriggered) {
+      if (isNew) create(formData as AudioBank);
+      else save({
+        ...(formData as AudioBank),
+        id: stateViewer!.id!,
+      });
+    }
   }, [names, isTriggered]);
 
   useEffect(() => {
@@ -187,15 +186,15 @@ function AudioViewer ({ stateViewer, refresh }: {
 
         <div className="card-actions justify-end mt-4">
           {!isNew && <>
-            <button className="btn btn-outline btn-error" onClick={() => {isLoading || deleteAudio(stateViewer!.id!)}}>
-              Delete {isLoading && <span className="loading loading-spinner text-error"></span>}
+            <button className="btn btn-outline btn-error" onClick={() => {isLoading || deleteAudio(stateViewer!.id!)}} disabled={isLoading}>
+              Delete {isDeleting && <span className="loading loading-spinner text-error"></span>}
             </button>
-            <button className="btn btn-primary" onClick={() => { isLoading || handleFileUpload() }}>
-              Update {isLoading && <span className="loading loading-spinner text-error"></span>}
+            <button className="btn btn-primary" onClick={() => { isLoading || handleFileUpload() }} disabled={isLoading}>
+              Update {(isUploading || isSaving) && <span className="loading loading-spinner text-primary-content"></span>}
             </button>
           </>}
-          {isNew && <button className="btn btn-primary" onClick={() => { isLoading || handleFileUpload() }}>
-            Add {isLoading && <span className="loading loading-spinner text-neutral"></span>}
+          {isNew && <button className="btn btn-primary" onClick={() => { isLoading || handleFileUpload() }} disabled={isLoading}>
+            Add {(isUploading || isStoring) && <span className="loading loading-spinner text-primary-content"></span>}
           </button>}
         </div>
 

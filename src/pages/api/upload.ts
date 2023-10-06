@@ -8,7 +8,7 @@ import IncomingForm from "formidable/Formidable";
 export default async function handler (req: NextApiRequest, res: NextApiResponse) {
     const names: Record<string, string[]> = {};
 
-    const form = formidable({} as formidable.Options) as IncomingForm;
+    const form = formidable({} as formidable.Options);
 
     const [fields, files] = await form.parse(req);
 

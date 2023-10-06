@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { type Dispatch, type SetStateAction, useState } from "react";
+import { Label } from "~/components/forms";
 
 type StateViewer = "add" | "update" | null;
 
@@ -80,48 +81,36 @@ function StoryViewer ({ stateViewer, setStateViewer }: {
   return (
     <div className="card w-96 border border-spacing-1">
       <div className="card-body">
-        <div className="form-control w-full">
-          <label className="label">
-            <span className="label-text">Give the story an inspiring name</span>
-          </label>
-          <input type="text" name="name" placeholder="Type here" className="input input-bordered w-full" />
-        </div>
-        <div className="form-control w-full">
-          <label className="label">
-            <span className="label-text">Tell a little spoiler to attract curiosity - description</span>
-          </label>
-          <input type="text" name="name" placeholder="Type here" className="input input-bordered w-full" />
-        </div>
-        <div className="form-control w-full">
-          <label className="label">
-            <span className="label-text">Upload the story</span>
-          </label>
-          <input type="file" className="file-input file-input-bordered file-input-primary w-full" />
-          {true && <label className="label">
-            <span className="label-text-alt">You could empty this field.</span>
-          </label>}
-        </div>
 
-        <div className="form-control w-full">
-          <label className="label">
-            <span className="label-text">Select Audio for Story Teller</span>
-          </label>
+        <Label labelTopLeft="Give the story an inspiring name">
+          <input type="text" name="name" placeholder="Type here" className="input input-bordered w-full" />
+        </Label>
+        <Label labelTopLeft="Tell a little spoiler to attract curiosity - description">
+          <input type="text" name="name" placeholder="Type here" className="input input-bordered w-full" />
+        </Label>
+        <Label labelTopLeft="Upload the story" labelBottomLeft={true && "You could empty this field."}>
+          <input type="file" className="file-input file-input-bordered file-input-primary w-full" />
+        </Label>
+        <Label labelTopLeft="Select Audio for Story Teller">
           <select className="select select-bordered w-full">
-            <option value="" selected>Audio 1</option>
+            <option value="">Audio 1</option>
             <option value="">Audio 2</option>
             <option value="">Audio 3</option>
           </select>
-        </div>
-        <div className="form-control w-full">
-          <label className="label">
-            <span className="label-text">Select Backsong to hypeup the story</span>
-          </label>
+        </Label>
+        <Label labelTopLeft="Select Backsong to hypeup the story">
           <select className="select select-bordered w-full">
-            <option value="" selected>Song 1</option>
+            <option value="">Song 1</option>
             <option value="">Song 2</option>
             <option value="">Song 3</option>
           </select>
-        </div>
+        </Label>
+
+        {true && <div className="mt-2">
+          <audio controls>
+            <source src="#" />
+          </audio>
+        </div>}
 
         <div className="card-actions justify-end mt-4">
           {stateViewer == "update" && <>

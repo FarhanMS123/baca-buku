@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { api } from "~/utils/api";
 import { XCircle } from "lucide-react";
+import { Label } from "~/components/forms";
 
 export type AudioBank = {
   id?: number,
@@ -96,10 +97,9 @@ function AudioViewer ({ stateViewer, refresh }: {
 
   const [formData, setFormData] = useState<Partial<AudioBank>>({});
   const [urlObj, setUrlObj] = useState<string>("");
+  const [isTriggered, setTrigger] = useState(false);
   const refAudioFile = useRef<HTMLInputElement>(null);
   const refAudioStream = useRef<HTMLAudioElement>(null);
-
-  console.log(formData);
 
   useEffect(() => {
     URL.revokeObjectURL(urlObj);
@@ -113,18 +113,20 @@ function AudioViewer ({ stateViewer, refresh }: {
   }, [ urlObj ]);
 
   useEffect(()=>{
+      if (!isTriggered) return;
+
       if ("audio" in formData && typeof names == "object" && typeof names.names == "object" 
           && typeof names.names.audio == "object" && names.names.audio != null) 
         formData.audio = names.names.audio[0];
 
-      if(uploaded) {
+      if(uploaded || isTriggered) {
         if (isNew) create(formData as AudioBank);
         else save({
           ...(formData as AudioBank),
           id: 0,
         });
       }
-  }, [names]);
+  }, [names, isTriggered]);
 
   useEffect(() => {
     if (isUploadError || isStoringError)
@@ -145,7 +147,7 @@ function AudioViewer ({ stateViewer, refresh }: {
   }
 
   function handleFileUpload() {
-    if (!("audio" in formData)) return void setFormData({ ...formData });
+    if (!("audio" in formData)) return void setTrigger(true);
     const fformData = new FormData();
     fformData.append(refAudioFile.current!.name, refAudioFile.current!.files!.item(0)!);
     upload(fformData);
@@ -158,51 +160,45 @@ function AudioViewer ({ stateViewer, refresh }: {
           <XCircle />
           <span>Storing Audio Failed! Please check your input or open console for technical inspection.</span>
         </div>}
-        <div className="form-control w-full">
-          <label className="label">
-            <span className="label-text">Give a cute name for the Audio</span>
-          </label>
+
+        <Label className="w-full" labelTopLeft="Give a cute name for the Audio">
           <input type="text" placeholder="Type here" className="input input-bordered w-full"
             name="name" onChange={handleFormData} defaultValue={(stateViewer as AudioBank)?.name}
           />
-        </div>
-        <div className="form-control w-full">
-          <label className="label">
-            <span className="label-text">Categorize your Audio</span>
-          </label>
+        </Label>
+        <Label className="w-full" labelTopLeft="Categorize your Audio">
           <select className="select select-bordered w-full" name="audio_type" onChange={handleFormData} defaultValue={(stateViewer as AudioBank)?.audio_type}>
             <option value="main_theme">Main Theme</option>
             <option value="backsong">Backsong</option>
             <option value="audio">Audio</option>
           </select>
-        </div>
-        <div className="form-control w-full">
-          <label className="label">
-            <span className="label-text">Upload the Audio</span>
-          </label>
+        </Label>
+        <Label className="w-full" labelTopLeft="Upload the Audio" labelBottomLeft={!isNew && "You could empty this field."}>
           <input type="file" className="file-input file-input-bordered file-input-primary w-full"
             ref={refAudioFile} name="audio" onChange={handleFormData} accept="audio/*"
           />
-          {!isNew && <label className="label">
-            <span className="label-text-alt">You could empty this field.</span>
-          </label>}
-        </div>
+        </Label>
+
         {urlObj.length > 0 && <div className="mt-2">
           <audio ref={refAudioStream} controls>
             <source src="#" />
           </audio>
         </div>}
+
         <div className="card-actions justify-end mt-4">
           {!isNew && <>
             <button className="btn btn-outline btn-error" onClick={() => {isLoading || deleteAudio(stateViewer!.id!)}}>
               Delete {isLoading && <span className="loading loading-spinner text-error"></span>}
             </button>
-            <button className="btn btn-primary">Update</button>
+            <button className="btn btn-primary" onClick={() => { isLoading || handleFileUpload() }}>
+              Update {isLoading && <span className="loading loading-spinner text-error"></span>}
+            </button>
           </>}
           {isNew && <button className="btn btn-primary" onClick={() => { isLoading || handleFileUpload() }}>
             Add {isLoading && <span className="loading loading-spinner text-neutral"></span>}
           </button>}
         </div>
+
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import { signIn } from "next-auth/react";
 import { FormEvent, useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { XCircle } from "lucide-react";
+import { Label } from "~/components/forms";
 
 type FormData = Record<"name" | "email" | "password", string>;
 
@@ -30,32 +31,26 @@ export default function Register () {
     <main>
       <div className="card bg-base-100 w-11/12 md:w-[32rem] mx-auto mt-24">
         <div className="card-body">
+          
           <h2 className="card-title">Register</h2>
           {isError && <div className="alert alert-error">
             <XCircle />
             <span>Register Failed! Please check your input or open console for technical inspection.</span>
           </div>}
-          <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text">What is your name?</span>
-            </label>
+
+          <Label labelTopLeft="What is your name?">
             <input type="text" name="name" placeholder="Type here" onInput={handleChange}
               className="input input-bordered w-full" />
-          </div>
-          <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text">Register your Email.</span>
-            </label>
+          </Label>
+          <Label labelTopLeft="Register your Email.">
             <input type="email" name="email" placeholder="your@email.com" onInput={handleChange}
               className="input input-bordered w-full" />
-          </div>
-          <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text">Shhh... Keep your password secret.</span>
-            </label>
+          </Label>
+          <Label labelTopLeft="Shhh... Keep your password secret.">
             <input type="password" name="password" placeholder="Password" onInput={handleChange}
               className="input input-bordered w-full" />
-          </div>
+          </Label>
+
           <div className="card-actions justify-between mt-4">
             <button className="btn btn-ghost" onClick={() => void signIn()}>or try to login.</button>
             <button className="btn btn-primary" onClick={() => (!isLoading && handleRegister())}>
@@ -63,6 +58,7 @@ export default function Register () {
               {isLoading && <span className="loading loading-spinner text-neutral"></span>}
             </button>
           </div>
+
         </div>
       </div>
     </main>

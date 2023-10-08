@@ -1,17 +1,13 @@
 import Link from "next/link";
-import { type Dispatch, type SetStateAction, useState, useRef, useEffect } from "react";
+import { type Dispatch, type SetStateAction, useState, useRef, useEffect, type ChangeEvent } from "react";
 import { Label } from "~/components/forms";
 import { useForm } from "react-hook-form";
 import { type Book } from "@prisma/client";
 import { api } from "~/utils/api";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-
-type StoryBank = {
-  id?: number;
-  name: string;
-  description: string;
-};
+import _ from "lodash";
+import { Trash2 } from 'lucide-react';
 
 type StateViewer = "add" | Book | null;
 
@@ -26,7 +22,6 @@ export default function StoryManagement () {
     <StoryList {...{stateViewer, setStateViewer}} />
     {stateViewer != null && <div className="flex gap-4 items-start mt-4">
       <StoryViewer key={new Date().getTime()} {...{stateViewer, refresh}} />
-      <AudioStamping />
     </div>}
   </>;
 }
@@ -107,11 +102,21 @@ function StoryViewer ({ stateViewer, refresh }: {
 
   const {data: audios} = api.audio.getAudios.useQuery("audio");
   const {data: backsongs} = api.audio.getAudios.useQuery("backsong");
-  const { register, setValue, getValues, watch  } = useForm<Book & { ebook: FileList }>();
+
+  const { register, setValue, getValues, watch, getFieldState, trigger, control  } = useForm<Book & { ebook: FileList }>();
+
+  console.log([ getValues(), watch() ]);
 
   useEffect(() => {
     if (deleted) refresh();
   }, [deleted]);
+
+  useEffect(() => {
+    if (isNew) {
+      if (audios) setValue("audio_id", audios[0]?.id ?? 0 );
+      if (backsongs) setValue("backsong_id", backsongs[0]?.id ?? 0 );
+    }
+  }, [audios, backsongs]);
 
   async function handleSubmit (state: "add" | "update") {
     let file: string | null = null;;
@@ -127,18 +132,27 @@ function StoryViewer ({ stateViewer, refresh }: {
       await store({
         name: getValues("name"),
         description: getValues("description"),
-        audio_id: getValues("audio_id") as number,
-        backsong_id: getValues("backsong_id") as number,
+        audio_id: getValues("audio_id")!,
+        backsong_id: getValues("backsong_id")!,
         book: file!,
         segment: [],
       });
-    else if (state == "update") 
-      await save({
+    else if (state == "update") {
+      const payload: Parameters<typeof save>[0] = {
         id: 0,
-      });
+      };
+
+      if ( getFieldState("name").isDirty ) payload.name = getValues("name");
+      if ( getFieldState("description").isDirty ) payload.description = getValues("description");
+      if ( getFieldState("audio_id").isDirty ) payload.audio_id = getValues("audio_id")!;
+      if ( getFieldState("backsong_id").isDirty ) payload.backsong_id = getValues("backsong_id")!;
+      if ( file ) payload.book = file;
+
+      await save(payload);
+    }
   }
 
-  return (
+  return <>
     <div className="card w-96 border border-spacing-1">
       <div className="card-body">
 
@@ -152,17 +166,17 @@ function StoryViewer ({ stateViewer, refresh }: {
           <input type="file" className="file-input file-input-bordered file-input-primary w-full" {...register("ebook")} />
         </Label>
         <Label labelTopLeft="Select Audio for Story Teller">
-          <select className="select select-bordered w-full" {...register("audio_id")}>
+          <select className="select select-bordered w-full" {...register("audio_id", { valueAsNumber: true })}>
             {audios?.map((audio => (
               <option key={audio.id} value={audio.id}>{ audio.name }</option>
             )))}
           </select>
         </Label>
         <Label labelTopLeft="Select Backsong to hypeup the story">
-          <select className="select select-bordered w-full" {...register("backsong_id")}>
-            {backsongs?.map((backsong => (
+          <select className="select select-bordered w-full" {...register("backsong_id", { valueAsNumber: true })}>
+            {backsongs?.map((backsong, i) => (
               <option key={backsong.id} value={backsong.id}>{ backsong.name }</option>
-            )))}
+            ))}
           </select>
         </Label>
 
@@ -187,19 +201,78 @@ function StoryViewer ({ stateViewer, refresh }: {
         </div>
       </div>
     </div>
-  );
+    {watch("audio_id") && !isNaN(watch("audio_id")!) &&
+    <AudioStamping srcId={ watch("audio_id")! } segment={ watch("segment") }
+      setValue={(data) => setValue("segment", data)} /> }
+  </>;
 }
 
-function AudioStamping () {
+function AudioStamping ({ srcId, segment, setValue }: {
+  srcId: number;
+  segment: Book["segment"];
+  setValue: (data: Book["segment"]) => void;
+}) {
+  const { data: audio } = api.audio.getAudio.useQuery(srcId);
+  const refAudio = useRef<HTMLAudioElement>(null);
+
+  function stamp() {
+    let arr: Book["segment"] = 
+      (typeof segment == "object" && (segment as any[]).constructor.name == Array.name) ? segment : [];
+    arr = [
+      ...arr,
+      {
+        timestamp: refAudio.current!.currentTime,
+        page: 0
+      }
+    ];
+    arr = _.chain(arr).sortBy(["timestamp"]).uniqBy("timestamp").value();
+    setValue(arr);
+  }
+
+  function handlePageChange (ev: ChangeEvent<HTMLInputElement>, i: number) {
+    segment[i]!.page = parseInt(ev.target.value);
+    setValue([...segment]);
+  }
+
+  function handleDelete (i: number) {
+    _.pullAt(segment, [i]);
+    setValue([...segment]);
+  }
+
   return (
     <div className="card border border-spacing-1">
       <div className="card-body">
         <div className="flex items-center gap-2">
-          <audio controls>
-            <source src="#" />
+          <audio ref={refAudio} controls>
+            {audio && <source src={ audio.blob_url } />}
           </audio>
-          <button className="btn btn-primary">Stamp</button>
+          <button className="btn btn-primary" onClick={stamp}>Stamp</button>
         </div>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Page</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            { segment?.map((x, i) => (
+              <tr key={x.timestamp}>
+                <td>{x.timestamp}</td>
+                <td>
+                  <input type="text" placeholder="Page Number" className="input input-bordered w-full"
+                    defaultValue={x.page} onChange={(ev) => handlePageChange(ev, i)} />
+                </td>
+                <td>
+                  <button className="btn btn-circle btn-error" onClick={() => handleDelete(i)}>
+                    <Trash2 />
+                  </button>
+                </td>
+              </tr>
+            )) }
+          </tbody>
+        </table>
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ import axios from "axios";
 import _ from "lodash";
 import { Trash2 } from 'lucide-react';
 
-type StateViewer = "add" | Book | null;
+type StateViewer = "add" | "update" | Book | null;
 
 export default function StoryManagement () {
   const [stateViewer, setStateViewer] = useState<StateViewer>(null);

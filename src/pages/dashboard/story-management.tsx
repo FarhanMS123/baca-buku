@@ -9,7 +9,7 @@ import axios from "axios";
 import _ from "lodash";
 import { Trash2 } from 'lucide-react';
 
-type StateViewer = "add" | "update" | Book | null;
+type StateViewer = "add" | Book | null;
 
 export default function StoryManagement () {
   const [stateViewer, setStateViewer] = useState<StateViewer>(null);
@@ -47,7 +47,7 @@ function StoryList ({ stateViewer, setStateViewer }: {
         <tbody>
           {
             Array(100).fill(0).map((x, i) => 
-              <tr key={i} className="hover" onClick={() => setStateViewer("update")}>
+              <tr key={i} className="hover" onClick={() => setStateViewer("update" as unknown as Book)}>
                 <td className="whitespace-nowrap">
                   <Link href="#" className="btn btn-secondary btn-sm">Some Unique Name</Link>
                 </td>

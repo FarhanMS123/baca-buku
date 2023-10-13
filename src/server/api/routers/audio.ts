@@ -1,6 +1,4 @@
 import { z } from "zod";
-import { put, del } from "@vercel/blob";
-import { readFile } from "fs/promises";
 import os from "os";
 import path from "path";
 
@@ -10,6 +8,7 @@ import {
   publicProcedure,
   adminProcedure,
 } from "~/server/api/trpc";
+import { bucket } from "~/server/utils/firebase";
 
 export const audioRouter = createTRPCRouter({
     getAudios: publicProcedure
@@ -34,19 +33,20 @@ export const audioRouter = createTRPCRouter({
         })).mutation(async ({ ctx: { db }, input }) => {
             // const audioname = encodeURIComponent(input.audio);
             const audioname = input.audio;
-            const blob = await readFile(path.join(os.tmpdir(), audioname));
-            const vname = `audios/${audioname}`;
+            const audiopath = path.join(os.tmpdir(), audioname);
+            const vname = `public/baca-buku/audios/${audioname}`;
 
-            const file = await put(vname, blob, {
-                access: "public",
+            const [file] = await bucket.upload(audiopath, {
+                destination: vname,
+                public: true,
             });
 
             const audio = await db.audio.create({
                 data: {
                     name: input.name,
                     audio_type: input.audio_type,
-                    blob_path: file.pathname,
-                    blob_url: file.url,
+                    blob_path: vname,
+                    blob_url: file.publicUrl(),
                 },
             });
 
@@ -59,7 +59,7 @@ export const audioRouter = createTRPCRouter({
             audio_type: z.enum(["audio", "backsong", "main_theme"]).optional(),
             audio: z.string().optional(),
         })).mutation(async ({ ctx: { db }, input }) => {
-            let audioname, blob, vname, file, audio;
+            let audioname, audiopath, vname, file, audio;
 
             audio = await db.audio.findFirst({
                 where: {
@@ -68,14 +68,15 @@ export const audioRouter = createTRPCRouter({
             });
 
             if (input.audio){
-                audioname = encodeURIComponent(input.audio);
-                blob = await readFile(path.join(os.tmpdir(), audioname));
-                vname = `audios/${audioname}`;
-                file = await put(vname, blob, {
-                    access: "public",
+                audioname = input.audio;
+                audiopath = path.join(os.tmpdir(), audioname);
+                vname = `public/baca-buku/audios/${audioname}`;
+                [file] = await bucket.upload(audiopath, {
+                    destination: vname,
+                    public: true,
                 });
                 /// @ts-ignore
-                await del(audio.blob_url);
+                await bucket.file(audio.blob_path).delete();
             }
 
             audio = await db.audio.update({
@@ -87,9 +88,9 @@ export const audioRouter = createTRPCRouter({
                     ...(input.audio_type ? {audio_type: input.audio_type} : {}),
                     ...(input.audio ? {
                         /// @ts-ignore
-                        blob_path: file.pathname,
+                        blob_path: vname,
                         /// @ts-ignore
-                        blob_url: file.url
+                        blob_url: file?.publicUrl(),
                     } : {}),
                 },
             });

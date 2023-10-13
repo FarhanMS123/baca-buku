@@ -1,3 +1,4 @@
+import { useStore } from "@nanostores/react";
 import { Audio } from "@prisma/client";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Label } from "~/components/forms";
@@ -5,19 +6,10 @@ import { $main_theme, $use_theme } from "~/hooks/setting";
 import { api } from "~/utils/api";
 
 export default function Setting () {
-  const [mainTheme, setMainTheme] = useState<Partial<Audio>>({});
-  const [isTheme, setIsTheme] = useState<boolean | undefined>(false);
+  const mainTheme = useStore($main_theme);
+  const isTheme = useStore($use_theme);
 
   const { data: themes } = api.audio.getAudios.useQuery("main_theme");
-
-  useEffect(() => {
-    if (Object.keys($main_theme.get()).length == 0 && themes?.[0]) 
-      $main_theme.set(themes[0]);
-
-    setMainTheme($main_theme.get());
-    setIsTheme($use_theme.get());
-
-  }, [$main_theme.get(), $use_theme.get()]);
 
   function handleSetTheme(ev: ChangeEvent<HTMLSelectElement>) {
     const theme = themes?.find((x) => x.id == parseInt(ev.target.value));
@@ -34,7 +26,7 @@ export default function Setting () {
       <div className="card-body">
         <h2 className="card-title">Setting</h2>
         <Label className="" labelTopLeft="Main Theme">
-          <select className="select select-bordered w-full" defaultValue={mainTheme.id}
+          <select className="select select-bordered w-full" value={mainTheme.id}
             onChange={handleSetTheme}
           >
             {themes?.map((theme, i) => (

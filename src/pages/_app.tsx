@@ -46,25 +46,23 @@ const MyApp: AppType<{ session: Session | null }> = ({
 export default api.withTRPC(MyApp);
 
 function SeperateSession() {
-  const [mainTheme, setMainTheme] = useState<Partial<Audio>>({});
-  const [isTheme, setIsTheme] = useState<boolean | undefined>(false);
+  const [ready, setReady] = useState(false);
+  const mainTheme = useStore($main_theme);
+  const isTheme = useStore($use_theme);
 
-  const { data: themes } = api.audio.getAudios.useQuery("main_theme", { enabled: Object.keys($main_theme.get()).length == 0 });
-  
+  const { data: themes } = api.audio.getAudios.useQuery("main_theme", { enabled: Object.keys(mainTheme).length == 0 });
+
   const refAudio = useRef<HTMLAudioElement>(null);
-  console.log({refAudio, mainTheme, isTheme});
-  console.log([Boolean(mainTheme?.blob_url), isTheme, mainTheme.blob_url]);
 
   useEffect(() => {
     if (Object.keys($main_theme.get()).length == 0 && themes?.[0]) 
       $main_theme.set(themes[0]);
 
-    setMainTheme($main_theme.get());
-    setIsTheme($use_theme.get());
-
-  }, [$main_theme.get(), $use_theme.get()]);
+  }, [mainTheme, isTheme, themes]);
 
   useEffect(() => {
+    setReady(true);
+
     const handle = () => {
       refAudio.current?.play();
       if (!refAudio.current?.paused) document.removeEventListener("click", handle);
@@ -72,9 +70,13 @@ function SeperateSession() {
 
     document.addEventListener("click", handle);
 
+    refAudio.current?.load();
+
     return () => document.removeEventListener("click", handle);
 
   }, [refAudio, mainTheme, isTheme]);
+
+  if (!ready) return <></>;
 
   return <>
     {Boolean(mainTheme?.blob_url) && isTheme && 

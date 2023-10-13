@@ -21,7 +21,11 @@ export const env = createEnv({
     DATABASE_HOST: z.string().optional(),
     DATABASE_PASSWORD: z.string().optional(),
 
-    BLOB_READ_WRITE_TOKEN: z.string().min(1),
+    BLOB_READ_WRITE_TOKEN: z.string().min(1).optional(),
+
+    FIREBASE_PROJECT_ID: z.string().min(1),
+    FIREBASE_CLIENT_EMAIL: z.string().min(1),
+    FIREBASE_PRIVATE_KEY: z.string().min(1),
 
     NODE_ENV: z
       .enum(["development", "test", "production"])
@@ -65,6 +69,10 @@ export const env = createEnv({
     DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
 
     BLOB_READ_WRITE_TOKEN:  process.env.BLOB_READ_WRITE_TOKEN,
+
+    FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
+    FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
+    FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
 
     NODE_ENV: process.env.NODE_ENV,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,

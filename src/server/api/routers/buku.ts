@@ -1,9 +1,6 @@
 import { z } from "zod";
-import { put, del } from "@vercel/blob";
-import { readFile } from "fs/promises";
 import os from "os";
 import path from "path";
-import crypto from "crypto";
 
 import {
   createTRPCRouter,
@@ -11,6 +8,7 @@ import {
   publicProcedure,
   adminProcedure,
 } from "~/server/api/trpc";
+import { bucket } from "~/server/utils/firebase";
 
 export const bukuRouter = createTRPCRouter({
     getBukus: publicProcedure.query(({ ctx: { db } }) => db.book.findMany()),
@@ -32,18 +30,21 @@ export const bukuRouter = createTRPCRouter({
             segment: z.tuple([z.number(), z.number()]).array(),
         })).mutation(async ({ ctx: { db }, input }) => {
             const bookname = input.book;
+            const bookpath = path.join(os.tmpdir(), bookname);
+            const vname = `public/baca-buku/books/${bookname}`;
+
             const thumbname = input.thumb;
-            const blob = await readFile(path.join(os.tmpdir(), bookname));
-            const thblob = await readFile(path.join(os.tmpdir(), thumbname));
-            const vname = `books/${bookname}`;
-            const tname = `books/${bookname}`;
+            const thumbpath = path.join(os.tmpdir(), thumbname);
+            const tname = `public/baca-buku/thumbs/${bookname}`;
 
-            console.log([vname, blob.byteLength]);
-            console.log([tname, thblob.byteLength]);
-
-            // const file = await put(vname, blob, {
-            //     access: "public",
-            // });
+            const [book] = await bucket.upload(bookpath, {
+                destination: vname,
+                public: true,
+            });
+            const [thumb] = await bucket.upload(thumbpath, {
+                destination: vname,
+                public: true,
+            });
         }),
     updateBuku: adminProcedure
         .input(z.object({

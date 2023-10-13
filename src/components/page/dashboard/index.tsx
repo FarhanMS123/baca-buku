@@ -27,7 +27,7 @@ export default function Dashboard ({ children }: {
           <li><Link href="/dashboard/setting">Setting</Link></li>
           {session && session.user.isAdmin && <>
             <div className="divider divider-vertical m-0"></div>
-            <li><Link href="/debug/blob">DEBUG: Vercel Blob</Link></li>
+            {/* <li><Link href="/debug/blob">DEBUG: Vercel Blob</Link></li> */}
             <li><Link href="/dashboard/audio-management">Audio Management</Link></li>
             <li><Link href="/dashboard/story-management">Story Management</Link></li>
           </>}

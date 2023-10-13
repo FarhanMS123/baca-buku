@@ -10,7 +10,7 @@ import "~/styles/globals.css";
 import NavBar from "~/components/Navbar";
 import { type NextComponentType, type NextPageContext } from "next";
 import Dashboard from "~/components/page/dashboard";
-import { $main_theme, $use_theme } from "~/hooks/setting";
+import { $main_theme, $themeOff, $use_theme } from "~/hooks/setting";
 import { useEffect, useRef, useState } from "react";
 import { Audio } from "@prisma/client";
 
@@ -49,6 +49,7 @@ function SeperateSession() {
   const [ready, setReady] = useState(false);
   const mainTheme = useStore($main_theme);
   const isTheme = useStore($use_theme);
+  const themeOff = useStore($themeOff);
 
   const { data: themes } = api.audio.getAudios.useQuery("main_theme", { enabled: Object.keys(mainTheme).length == 0 });
 
@@ -79,7 +80,7 @@ function SeperateSession() {
   if (!ready) return <></>;
 
   return <>
-    {Boolean(mainTheme?.blob_url) && isTheme && 
+    {Boolean(mainTheme?.blob_url) && isTheme && !themeOff &&
     <audio ref={refAudio} autoPlay>
       <source src={mainTheme.blob_url} />
     </audio>}

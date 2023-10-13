@@ -22,12 +22,15 @@ export const bukuRouter = createTRPCRouter({
     addBuku: adminProcedure
         .input(z.object({
             name: z.string(),
-            description: z.string().optional(),
+            description: z.string().optional().default(""),
             book: z.string(),
             thumb: z.string(),
             backsong_id: z.number(),
             audio_id: z.number(),
-            segment: z.tuple([z.number(), z.number()]).array(),
+            segment: z.object({
+                timestamp: z.number(),
+                page: z.number(),
+            }).array().default([]),
         })).mutation(async ({ ctx: { db }, input }) => {
             const bookname = input.book;
             const bookpath = path.join(os.tmpdir(), bookname);
@@ -42,8 +45,22 @@ export const bukuRouter = createTRPCRouter({
                 public: true,
             });
             const [thumb] = await bucket.upload(thumbpath, {
-                destination: vname,
+                destination: tname,
                 public: true,
+            });
+
+            await db.book.create({
+                data: {
+                    name: input.name,
+                    description: input.description,
+                    blob_path: vname,
+                    blob_url: book.publicUrl(),
+                    thumb_path: tname,
+                    thumb_url: thumb.publicUrl(),
+                    audio_id: input.audio_id,
+                    backsong_id: input.backsong_id,
+                    segment: input.segment,
+                }
             });
         }),
     updateBuku: adminProcedure

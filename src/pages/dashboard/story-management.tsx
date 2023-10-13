@@ -20,7 +20,7 @@ export default function StoryManagement () {
 
   return <>
     <StoryList {...{stateViewer, setStateViewer}} />
-    {stateViewer != null && <div className="flex gap-4 items-start mt-4">
+    {stateViewer != null && <div className="gap-4 items-start mt-4 md:flex">
       <StoryViewer key={new Date().getTime()} {...{stateViewer, refresh}} />
     </div>}
   </>;
@@ -103,9 +103,9 @@ function StoryViewer ({ stateViewer, refresh }: {
   const {data: audios} = api.audio.getAudios.useQuery("audio");
   const {data: backsongs} = api.audio.getAudios.useQuery("backsong");
 
-  const { register, setValue, getValues, watch, getFieldState, trigger, control  } = useForm<Book & { ebook: FileList }>();
+  const { register, setValue, getValues, watch, getFieldState, trigger, control  } = useForm<Book & { ebook: FileList, thumb: FileList }>();
 
-  console.log([ getValues(), watch() ]);
+  const { data: bs } = api.audio.getAudio.useQuery(watch("backsong_id") ?? 0);
 
   useEffect(() => {
     if (deleted) refresh();
@@ -119,14 +119,17 @@ function StoryViewer ({ stateViewer, refresh }: {
   }, [audios, backsongs]);
 
   async function handleSubmit (state: "add" | "update") {
-    let file: string | null = null;;
+    let file: string | null = null;
+    let thumb: string | null = null;
 
-    if (getValues("ebook")) {
-      const fformData = new FormData();
-      fformData.append("ebook", getValues("ebook").item(0)!);
-      const ret = await upload(fformData);
-      file = ret.names.ebook![0]!;
-    }
+    const fformData = new FormData();
+    if (getValues("ebook")) fformData.append("ebook", getValues("ebook").item(0)!);
+    if (getValues("thumb")) fformData.append("thumb", getValues("thumb").item(0)!);
+      
+    const ret = await upload(fformData);
+    
+    if (getValues("ebook")) file = ret.names.ebook![0]!;
+    if (getValues("thumb")) thumb = ret.names.thumb![0]!;
 
     if (state == "add")
       await store({
@@ -135,6 +138,7 @@ function StoryViewer ({ stateViewer, refresh }: {
         audio_id: getValues("audio_id")!,
         backsong_id: getValues("backsong_id")!,
         book: file!,
+        thumb: thumb!,
         segment: [],
       });
     else if (state == "update") {
@@ -153,17 +157,20 @@ function StoryViewer ({ stateViewer, refresh }: {
   }
 
   return <>
-    <div className="card w-96 border border-spacing-1">
+    <div className="card border border-1 md:w-96">
       <div className="card-body">
 
         <Label labelTopLeft="Give the story an inspiring name">
           <input type="text" placeholder="Type here" className="input input-bordered w-full" {...register("name")} />
         </Label>
         <Label labelTopLeft="Tell a little spoiler to attract curiosity - description">
-          <input type="text" placeholder="Type here" className="input input-bordered w-full" {...register("description")} />
+          <textarea placeholder="Type here" className="textarea textarea-bordered w-full" {...register("description")}></textarea>
         </Label>
-        <Label labelTopLeft="Upload the story" labelBottomLeft={true && "You could empty this field."}>
+        <Label labelTopLeft="Upload the story" labelBottomLeft={!isNew && "You could empty this field."}>
           <input type="file" className="file-input file-input-bordered file-input-primary w-full" {...register("ebook")} />
+        </Label>
+        <Label labelTopLeft="Set an Interesting Cover for the Book - Thumbnail" labelBottomLeft={!isNew && "You could empty this field."}>
+          <input type="file" className="file-input file-input-bordered file-input-primary w-full" {...register("thumb")} />
         </Label>
         <Label labelTopLeft="Select Audio for Story Teller">
           <select className="select select-bordered w-full" {...register("audio_id", { valueAsNumber: true })}>
@@ -180,9 +187,9 @@ function StoryViewer ({ stateViewer, refresh }: {
           </select>
         </Label>
 
-        {true && <div className="mt-2">
-          <audio controls>
-            <source src="#" />
+        {bs && <div className="mt-2">
+          <audio controls className="max-w-full">
+            <source src={bs.blob_url} />
           </audio>
         </div>}
 
@@ -201,7 +208,7 @@ function StoryViewer ({ stateViewer, refresh }: {
         </div>
       </div>
     </div>
-    {watch("audio_id") && !isNaN(watch("audio_id")!) &&
+    {watch("audio_id") && !isNaN(getValues("audio_id")!) &&
     <AudioStamping srcId={ watch("audio_id")! } segment={ watch("segment") }
       setValue={(data) => setValue("segment", data)} /> }
   </>;
@@ -240,10 +247,10 @@ function AudioStamping ({ srcId, segment, setValue }: {
   }
 
   return (
-    <div className="card border border-spacing-1">
+    <div className="card border border-1">
       <div className="card-body">
-        <div className="flex items-center gap-2">
-          <audio ref={refAudio} controls>
+        <div className="items-center gap-2 md:flex">
+          <audio ref={refAudio} controls className="max-w-full">
             {audio && <source src={ audio.blob_url } />}
           </audio>
           <button className="btn btn-primary" onClick={stamp}>Stamp</button>

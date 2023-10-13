@@ -1,4 +1,4 @@
-import { type Dispatch, type SetStateAction, useState, useRef, LegacyRef, ChangeEvent, useEffect } from "react";
+import { type Dispatch, type SetStateAction, useState, useRef, LegacyRef, ChangeEvent, useEffect, useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { api } from "~/utils/api";
@@ -25,7 +25,7 @@ export default function AudioManagement () {
   }
 
   return <>
-  <div className="flex gap-4 items-start">
+  <div className="gap-4 items-start md:flex">
     <AudioList {...{stateViewer, setStateViewer}} />
     {stateViewer != null && <AudioViewer key={new Date().getTime()} {...{stateViewer, refresh}} />}
   </div>
@@ -153,7 +153,7 @@ function AudioViewer ({ stateViewer, refresh }: {
   }
 
   return (
-    <div className="card w-96 border border-spacing-1">
+    <div className="card border border-1 md:w-96">
       <div className="card-body">
         {(isUploadError || isStoringError) && <div className="alert alert-error">
           <XCircle />

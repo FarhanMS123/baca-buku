@@ -32,7 +32,8 @@ export const audioRouter = createTRPCRouter({
             audio_type: z.enum(["audio", "backsong", "main_theme"]),
             audio: z.string(),
         })).mutation(async ({ ctx: { db }, input }) => {
-            const audioname = encodeURIComponent(input.audio);
+            // const audioname = encodeURIComponent(input.audio);
+            const audioname = input.audio;
             const blob = await readFile(path.join(os.tmpdir(), audioname));
             const vname = `audios/${audioname}`;
 

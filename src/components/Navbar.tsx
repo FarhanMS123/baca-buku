@@ -25,6 +25,7 @@ function MenuMd() {
 
   return <div className="navbar-end gap-2 hidden md:flex">
   {!session && <>
+    <Link href="/dashboard/setting" className="btn btn-ghost">Setting</Link>
     <button className="btn btn-primary" onClick={() => void signIn()}>Login</button>
     <Link href="/register" className="btn">Register</Link>
   </>}
@@ -41,18 +42,21 @@ function MenuMobile() {
   return <div className="navbar-end md:hidden">
     <details className="dropdown dropdown-end">
       <summary className="btn btn-ghost"><MoreHorizontal /></summary>
-      <ul className="shadow-xl menu dropdown-content bg-base-100 border">
-        <li><a href="http://" target="_blank">Home</a></li>
+      <ul className="shadow-xl menu dropdown-content bg-base-100 border z-[1]">
+        <li><Link href="/">Home</Link></li>
         {!session && <>
+          <li><Link href="/dashboard/setting">Setting</Link></li>
           <div className="divider divider-vertical m-0"></div>
-          <li><a href="http://" target="_blank">Login</a></li>
-          <li><a href="http://" target="_blank">Register</a></li>
+          <li><a href="#"  onClick={() => void signIn()}>Login</a></li>
+          <li><Link href="/register" className="btn content-center">Register</Link></li>
         </>}
         {session && <>
           <li><Link href="/dashboard">Dashboard</Link></li>
           <div className="divider divider-vertical m-0"></div>
           <li><a href="#" onClick={() => void signOut()}>Signout</a></li>
         </>}
+          <div className="divider divider-vertical m-0"></div>
+          <li><Link href="/credit">Credit</Link></li>
       </ul>
     </details>
   </div>

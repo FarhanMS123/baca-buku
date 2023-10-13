@@ -1,9 +1,8 @@
-import type { NextApiRequest, NextApiResponse, NextConfig, PageConfig, } from "next";
+import type { NextApiRequest, NextApiResponse, PageConfig, } from "next";
 import formidable from "formidable";
 import crypto from "crypto";
 import { renameSync } from "node:fs";
 import { dirname, join } from "path";
-import IncomingForm from "formidable/Formidable";
 
 export default async function handler (req: NextApiRequest, res: NextApiResponse) {
     const names: Record<string, string[]> = {};

@@ -1,4 +1,4 @@
-export default function Dashboard () {
+export default function Setting () {
   return <>
     <p className="text-center text-lg font-medium text-gray-400">
       <i>Nothing to see here...</i>
@@ -6,4 +6,4 @@ export default function Dashboard () {
   </>;
 }
 
-Dashboard.theme = "dashboard";
+Setting.theme = "dashboard";

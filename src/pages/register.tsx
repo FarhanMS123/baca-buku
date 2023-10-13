@@ -1,12 +1,16 @@
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { FormEvent, useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { XCircle } from "lucide-react";
 import { Label } from "~/components/forms";
+import { useRouter } from "next/router";
 
 type FormData = Record<"name" | "email" | "password", string>;
 
 export default function Register () {
+  const router = useRouter();
+  const { status: authStatus } = useSession();
+
   const { status, mutate: register, isLoading, isSuccess, isError, ..._register } = api.auth.register.useMutation();
   const [formData, setFormData] = useState<FormData | object>({});
 
@@ -14,6 +18,8 @@ export default function Register () {
     if(isError) console.log({_register, status, isLoading, isError, isSuccess, formData});
     else if(isSuccess) signIn();
   }, [status]);
+
+  if (authStatus == "authenticated") router.push("/");
 
   const handleRegister = () => {
     register(formData as FormData);
@@ -26,6 +32,7 @@ export default function Register () {
       [target.name]: target.value,
     }));
   }
+
   
   return (
     <main>

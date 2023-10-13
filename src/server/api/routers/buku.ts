@@ -3,6 +3,7 @@ import { put, del } from "@vercel/blob";
 import { readFile } from "fs/promises";
 import os from "os";
 import path from "path";
+import crypto from "crypto";
 
 import {
   createTRPCRouter,
@@ -23,19 +24,26 @@ export const bukuRouter = createTRPCRouter({
     addBuku: adminProcedure
         .input(z.object({
             name: z.string(),
-            description: z.string(),
+            description: z.string().optional(),
             book: z.string(),
+            thumb: z.string(),
             backsong_id: z.number(),
             audio_id: z.number(),
             segment: z.tuple([z.number(), z.number()]).array(),
         })).mutation(async ({ ctx: { db }, input }) => {
-            const bookname = encodeURIComponent(input.book);
+            const bookname = input.book;
+            const thumbname = input.thumb;
             const blob = await readFile(path.join(os.tmpdir(), bookname));
+            const thblob = await readFile(path.join(os.tmpdir(), thumbname));
             const vname = `books/${bookname}`;
+            const tname = `books/${bookname}`;
 
-            const file = await put(vname, blob, {
-                access: "public",
-            });
+            console.log([vname, blob.byteLength]);
+            console.log([tname, thblob.byteLength]);
+
+            // const file = await put(vname, blob, {
+            //     access: "public",
+            // });
         }),
     updateBuku: adminProcedure
         .input(z.object({

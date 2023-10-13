@@ -30,7 +30,7 @@ function MenuMd() {
     <Link href="/register" className="btn">Register</Link>
   </>}
   {session && <>
-    <Link href="/dashboard" className="btn btn-ghost">Dashboard</Link>
+    <Link href="/dashboard/setting" className="btn btn-ghost">Dashboard</Link>
     <button className="btn btn-ghost" onClick={() => void signOut()}>Signout</button>
   </>}
 </div>
@@ -51,7 +51,7 @@ function MenuMobile() {
           <li><Link href="/register" className="btn content-center">Register</Link></li>
         </>}
         {session && <>
-          <li><Link href="/dashboard">Dashboard</Link></li>
+          <li><Link href="/dashboard/setting">Dashboard</Link></li>
           <div className="divider divider-vertical m-0"></div>
           <li><a href="#" onClick={() => void signOut()}>Signout</a></li>
         </>}

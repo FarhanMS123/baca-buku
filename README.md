@@ -33,6 +33,7 @@ This software is using [GNU GPLv2 (GNU General Public License v3.0)](https://cho
 deployment would be following their original owner. Those assets are:
 
 - I Like Food from [Hero Patterns](https://heropatterns.com/)
+- Baca Buku Logo are AI Generated using [Bing Image Creator](https://www.bing.com/create)
 
 - Youtube: [a playlist for living in an eternal autumn](https://www.youtube.com/watch?v=fQpT0if-UXA) by nobody
 - Youtube: [Instrumen Lagu Anak Indonesia](https://www.youtube.com/watch?v=wjTuGnzhFo0) by andi rosyid

@@ -79,6 +79,9 @@ model Book {
   /// [AudioSegment]
   segment     Json[] @db.JsonB
   backsong_id Int?
+
+  audio    Audio? @relation(name: "audio", fields: [audio_id], references: [id])
+  backsong Audio? @relation(name: "backsong", fields: [backsong_id], references: [id])
 }
 
 model Audio {
@@ -87,6 +90,9 @@ model Audio {
   audio_type AudioType
   blob_path  String
   blob_url   String
+
+  book_audio    Book[] @relation(name: "audio")
+  book_backsong Book[] @relation(name: "backsong")
 }
 
 enum AudioType {

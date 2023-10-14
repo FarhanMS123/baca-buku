@@ -81,7 +81,7 @@ function SeperateSession() {
 
   return <>
     {Boolean(mainTheme?.blob_url) && isTheme && !themeOff &&
-    <audio ref={refAudio} autoPlay>
+    <audio ref={refAudio} autoPlay loop>
       <source src={mainTheme.blob_url} />
     </audio>}
   </>;

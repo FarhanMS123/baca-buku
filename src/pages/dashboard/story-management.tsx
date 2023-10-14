@@ -32,6 +32,7 @@ function StoryList ({ stateViewer, setStateViewer }: {
   stateViewer: StateViewer;
   setStateViewer: Dispatch<SetStateAction<StateViewer>>
 }) {
+  const { data: bukus } = api.buku.getBukus.useQuery();
   return(
     <div className="overflow-x-auto max-h-[30rem] table-pin-rows table-pin-cols w-full">
       <table className="table">
@@ -46,23 +47,28 @@ function StoryList ({ stateViewer, setStateViewer }: {
 
         <tbody>
           {
-            Array(100).fill(0).map((x, i) => 
-              <tr key={i} className="hover" onClick={() => setStateViewer("update" as unknown as Book)}>
+            bukus?.map((x, i) => 
+              <tr key={x.id} className="hover" onClick={() => setStateViewer(x)}>
                 <td className="whitespace-nowrap">
-                  <Link href="#" className="btn btn-secondary btn-sm">Some Unique Name</Link>
+                  <div className="card border border-1">
+                    <figure>
+                      <img src={x.thumb_url} />
+                    </figure>
+                  </div>
+                  <Link href={ x.blob_url } target="_blank" className="btn btn-secondary btn-sm">{ x.name }</Link>
                 </td>
                 <td className="min-w-[16rem]">
-                  A lot and long long so long description
+                  { x.description }
                 </td>
                 <td>
                   <audio controls>
-                    <source src="#" />
+                    <source src={ x.audio?.blob_url } />
                   </audio>
                   {true && <div className="badge badge-primary mt-2">Page: 3</div>}
                 </td>
                 <td>
                   <audio controls>
-                    <source src="#" />
+                    <source src={ x.backsong?.blob_url } />
                   </audio>
                 </td>
               </tr>
@@ -203,7 +209,7 @@ function StoryViewer ({ stateViewer, refresh }: {
             </button>
           </>}
           {isNew && <button className="btn btn-primary" onClick={() => void handleSubmit("add")} disabled={isLoading}>
-            Add {isDeleting && <span className="loading loading-spinner text-primary-content"></span>}
+            Add {isStoring && <span className="loading loading-spinner text-primary-content"></span>}
           </button>}
         </div>
       </div>

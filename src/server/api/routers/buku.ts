@@ -11,7 +11,12 @@ import {
 import { bucket } from "~/server/utils/firebase";
 
 export const bukuRouter = createTRPCRouter({
-    getBukus: publicProcedure.query(({ ctx: { db } }) => db.book.findMany()),
+    getBukus: publicProcedure.query(({ ctx: { db } }) => db.book.findMany({
+        include: {
+            audio: true,
+            backsong: true,
+        }
+    })),
     getBuku: publicProcedure
         .input(z.number())
         .query(({ ctx: { db }, input }) => db.book.findFirst({
@@ -38,7 +43,7 @@ export const bukuRouter = createTRPCRouter({
 
             const thumbname = input.thumb;
             const thumbpath = path.join(os.tmpdir(), thumbname);
-            const tname = `public/baca-buku/thumbs/${bookname}`;
+            const tname = `public/baca-buku/thumbs/${thumbname}`;
 
             const [book] = await bucket.upload(bookpath, {
                 destination: vname,

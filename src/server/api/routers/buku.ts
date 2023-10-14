@@ -22,6 +22,10 @@ export const bukuRouter = createTRPCRouter({
         .query(({ ctx: { db }, input }) => db.book.findFirst({
             where: {
                 id: input,
+            },
+            include: {
+                audio: true,
+                backsong: true,
             }
         })),
     addBuku: adminProcedure

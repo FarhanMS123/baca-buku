@@ -4,6 +4,7 @@ import { type AppType } from "next/app";
 import Head from "next/head";
 
 import { api } from "~/utils/api";
+import {} from "~/utils/root";
 
 import "~/styles/globals.css";
 import NavBar from "~/components/Navbar";

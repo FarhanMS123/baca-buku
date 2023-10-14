@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
 import { api } from "~/utils/api";
+import { Document, Page } from "react-pdf";
 
 export default function Buku () {
   const router = useRouter();
@@ -27,10 +28,15 @@ export default function Buku () {
 
   }, [refAudio, buku]);
 
+  if (!buku) return (<></>);
+
   return <>
-    <audio ref={refAudio} autoPlay controls loop>
-      <source src={buku?.backsong?.blob_url} />
+    <audio ref={refAudio} autoPlay loop>
+      <source src={buku.backsong?.blob_url} />
     </audio>
+    <Document file={buku.blob_url}>
+      <Page />
+    </Document>
   </>;
 }
 

@@ -43,3 +43,5 @@ yarn-error.log*
 
 # secret
 *firebase-adminsdk*.json
+
+certificates

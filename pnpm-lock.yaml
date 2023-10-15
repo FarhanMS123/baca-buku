@@ -20,6 +20,7 @@ specifiers:
   '@types/node': ^18.16.0
   '@types/react': ^18.2.20
   '@types/react-dom': ^18.2.7
+  '@types/react-window': ^1.8.6
   '@typescript-eslint/eslint-plugin': ^6.3.0
   '@typescript-eslint/parser': ^6.3.0
   '@vercel/blob': ^0.13.0
@@ -46,6 +47,7 @@ specifiers:
   react-dom: 18.2.0
   react-hook-form: ^7.47.0
   react-pdf: ^7.5.0
+  react-window: ^1.8.9
   superjson: ^1.13.1
   tailwindcss: ^3.3.3
   typescript: ^5.1.6
@@ -77,6 +79,7 @@ dependencies:
   react-dom: 18.2.0_react@18.2.0
   react-hook-form: 7.47.0_react@18.2.0
   react-pdf: 7.5.0_7xd7ir5nhcoi7hkxcipzh5svmq
+  react-window: 1.8.9_biqbaboplfbrettd7655fr4n2y
   superjson: 1.13.3
   zod: 3.22.2
 
@@ -90,6 +93,7 @@ devDependencies:
   '@types/node': 18.18.1
   '@types/react': 18.2.23
   '@types/react-dom': 18.2.8
+  '@types/react-window': 1.8.6
   '@typescript-eslint/eslint-plugin': 6.7.3_ptdtxirkj6smbsapfa2xu7c5iq
   '@typescript-eslint/parser': 6.7.3_jk7qbkaijtltyu4ajmze3dfiwa
   autoprefixer: 10.4.16_postcss@8.4.31
@@ -1024,6 +1028,12 @@ packages:
 
   /@types/react-dom/18.2.8:
     resolution: {integrity: sha512-bAIvO5lN/U8sPGvs1Xm61rlRHHaq5rp5N3kp9C+NJ/Q41P8iqjkXSu0+/qu8POsjH9pNWb0OYabFez7taP7omw==}
+    dependencies:
+      '@types/react': 18.2.23
+    dev: true
+
+  /@types/react-window/1.8.6:
+    resolution: {integrity: sha512-AVJr3A5rIO9dQQu5TwTN0lP2c1RtuqyyZGCt7PGP8e5gUpn1PuQRMJb/u3UpdbwTHh4wbEi33UMW5NI0IXt1Mg==}
     dependencies:
       '@types/react': 18.2.23
     dev: true
@@ -3613,6 +3623,10 @@ packages:
     dev: false
     optional: true
 
+  /memoize-one/5.2.1:
+    resolution: {integrity: sha512-zYiwtZUcYyXKo/np96AGZAckk+FWWsUdJ3cHGGmld7+AhvcWmQyGCYUh1hc4Q/pkOhb65dQR/pqCyK0cOaHz4Q==}
+    dev: false
+
   /merge-refs/1.2.1:
     resolution: {integrity: sha512-pRPz39HQz2xzHdXAGvtJ9S8aEpNgpUjzb5yPC3ytozodmsHg+9nqgRs7/YOmn9fM/TLzntAC8AdGTidKxOq9TQ==}
     dependencies:
@@ -4426,6 +4440,19 @@ packages:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
       react: 18.2.0
+    dev: false
+
+  /react-window/1.8.9_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-+Eqx/fj1Aa5WnhRfj9dJg4VYATGwIUP2ItwItiJ6zboKWA6EX3lYDAXfGF2hyNqplEprhbtjbipiADEcwQ823Q==}
+    engines: {node: '>8.0.0'}
+    peerDependencies:
+      react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      '@babel/runtime': 7.23.1
+      memoize-one: 5.2.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /react/18.2.0:

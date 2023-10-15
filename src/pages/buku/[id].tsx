@@ -7,6 +7,10 @@ import { api } from "~/utils/api";
 import { Document, Page } from "react-pdf";
 import { ArrowLeft, Ear, Home, Volume2, VolumeX } from 'lucide-react';
 import Link from 'next/link';
+import { FixedSizeList } from "react-window";
+
+type RectDOMBase = "x" | "y" | "width" | "height";
+type RectDOMPos = "top" | "bottom" | "left" | "right";
 
 export default function Buku () {
   const router = useRouter();
@@ -17,14 +21,17 @@ export default function Buku () {
 
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
+
   const [d_height, setDHeight] = useState<number>();
-  const [d_width, setDWidth] = useState<number>();
+  const [d_bound, setDBound] = useState<Partial<Record<RectDOMBase | RectDOMPos, number>>>({});
   const [twoPages, setTwoPages] = useState(false);
 
-  const [stateAudio, setStateAudio] = useState<number>(0);
+  const [, setStateAudio] = useState<number>(0);
 
   const refAudio = useRef<HTMLAudioElement>(null);
   const refCanvas = useRef<HTMLCanvasElement>(null);
+
+  console.log([refCanvas, d_height, d_bound]);
 
   useEffect(() => {
     const handle = () => {
@@ -54,15 +61,24 @@ export default function Buku () {
 
   useEffect(() => {
     handleTwoPage();
-  }, [refCanvas, d_height]);
+    document.addEventListener("click", handleTwoPage);
+    return () => document.removeEventListener("click", handleTwoPage)
+  }, [refCanvas, d_height, d_bound]);
 
   function handleTwoPage() {
     if (refCanvas.current) {
-      if (refCanvas.current.width * 2 < window.innerWidth) setTwoPages(true);
-      else setTwoPages(false);
+      let isTwoPages = false;
+      if (refCanvas.current.width * 2 < window.innerWidth) isTwoPages = true;
+      setTwoPages(isTwoPages);
 
-      if (window.innerWidth < refCanvas.current.width) setDWidth(window.innerWidth);
-      else setDWidth(undefined);
+      const bound = refCanvas.current.getBoundingClientRect();
+      if (refCanvas.current.width <= window.innerWidth) { // Canvas is Fit, use height
+        if (Math.abs(refCanvas.current.height - window.innerHeight) > 50) setDBound(bound);
+      } else { // Canvas is cramped, use width
+        if (Math.abs(refCanvas.current.height - window.innerHeight) > 50) setDBound(bound);
+      }
+
+      console.log([refCanvas.current.height, window.innerHeight, Math.abs(refCanvas.current.height - window.innerHeight) > 50]);
     }
   }
 
@@ -109,9 +125,20 @@ export default function Buku () {
     </div>
 
     <Document file={buku.blob_url} onLoadSuccess={onDocumentLoadSuccess} className="flex justify-center items-center h-screen sm:h-auto">
-      <Page canvasRef={refCanvas} pageNumber={pageNumber} height={d_height} width={d_width}
-        className="!bg-transparent !max-w-min" onRenderSuccess={handleTwoPage} onClick={handlePaginationFirst} />
-      {twoPages && <Page pageNumber={pageNumber + 1} height={d_height} className="!bg-transparent !max-w-min" onClick={() => setPage(1)} />}
+      <FixedSizeList
+        height={d_height ?? 10}
+        itemSize={d_bound.width ?? 10}
+        layout="horizontal"
+        itemCount={numPages}
+        width={(d_bound.width ?? 0) * 2}
+        className="!overflow-hidden"
+      >
+        {({index, style}) => (
+          <div style={{...style}}>
+            <Page {...(index == 0 ? {canvasRef: refCanvas} : {})} pageIndex={index} height={d_height} />
+          </div>
+        )}
+      </FixedSizeList>
     </Document>
   </>;
 }

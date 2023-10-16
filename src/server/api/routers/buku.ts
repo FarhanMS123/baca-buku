@@ -10,6 +10,8 @@ import {
 } from "~/server/api/trpc";
 import { bucket } from "~/server/utils/firebase";
 
+let t;
+
 export const bukuRouter = createTRPCRouter({
     getBukus: publicProcedure.query(({ ctx: { db } }) => db.book.findMany({
         include: {
@@ -19,15 +21,18 @@ export const bukuRouter = createTRPCRouter({
     })),
     getBuku: publicProcedure
         .input(z.number())
-        .query(({ ctx: { db }, input }) => db.book.findFirst({
-            where: {
-                id: input,
-            },
-            include: {
-                audio: true,
-                backsong: true,
-            }
-        })),
+        .query(async ({ ctx: { db }, input }) => {
+            if (!t) t = await db.book.findFirst({
+                where: {
+                    id: input,
+                },
+                include: {
+                    audio: true,
+                    backsong: true,
+                }
+            });
+            return t;
+        }),
     addBuku: adminProcedure
         .input(z.object({
             name: z.string(),

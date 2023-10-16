@@ -4,7 +4,7 @@ import { api } from "~/utils/api";
 export default function Home() {
   const {data: books,} = api.buku.getBukus.useQuery();
   return (
-    <main className="w-full p-4 flex gap-4">
+    <main className="w-full p-4 flex gap-4 flex-wrap">
       {books?.map(x => (
         <Link key={x.id} href={`/buku/${ x.id }`}>
           <div className="card shadow-xl w-40 bg-base-100">

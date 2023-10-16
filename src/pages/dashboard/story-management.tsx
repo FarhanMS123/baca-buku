@@ -180,6 +180,7 @@ function StoryViewer ({ stateViewer, refresh }: {
         </Label>
         <Label labelTopLeft="Select Audio for Story Teller">
           <select className="select select-bordered w-full" {...register("audio_id", { valueAsNumber: true })}>
+            <option>Select Audio</option>
             {audios?.map((audio => (
               <option key={audio.id} value={audio.id}>{ audio.name }</option>
             )))}
@@ -187,6 +188,7 @@ function StoryViewer ({ stateViewer, refresh }: {
         </Label>
         <Label labelTopLeft="Select Backsong to hypeup the story">
           <select className="select select-bordered w-full" {...register("backsong_id", { valueAsNumber: true })}>
+          <option>Select Backsong</option>
             {backsongs?.map((backsong, i) => (
               <option key={backsong.id} value={backsong.id}>{ backsong.name }</option>
             ))}

@@ -110,8 +110,8 @@ export default function Buku () {
 
     <Document file={buku.blob_url} onLoadSuccess={onDocumentLoadSuccess} className="flex justify-center items-center h-screen sm:h-auto">
       <Page canvasRef={refCanvas} pageNumber={pageNumber} height={d_height} width={d_width}
-        className="!bg-transparent !max-w-min" onRenderSuccess={handleTwoPage} onClick={handlePaginationFirst} />
-      {twoPages && <Page pageNumber={pageNumber + 1} height={d_height} className="!bg-transparent !max-w-min" onClick={() => setPage(1)} />}
+        className="!max-w-min" onRenderSuccess={handleTwoPage} onClick={handlePaginationFirst} />
+      {twoPages && <Page pageNumber={pageNumber + 1} height={d_height} className="!max-w-min" onClick={() => setPage(1)} />}
     </Document>
   </>;
 }
